@@ -7,6 +7,7 @@ def send_webex_notification(asset_id, cvss_score):
     api = WebexTeamsAPI(access_token="") # TODO: token per il SOC
     message = f"Asset {asset_id} vulnerability. CVSS: {cvss_score}"
     api.messages.create(roomId="", text=message) # TODO: inserire room ID
+    # Creare canale generale per le vuln con CVSS basso
 
 
 def connect_to_cmdb():
