@@ -1,5 +1,5 @@
 mysql.connector
 requests
 webexteamssdk
-telethon #per connessione a telegram, inoltre accedere a my.telegram.org per il proprio api_id e api_hash da inserire nei file config e config-sample (oltre al numero di telefono e username Telegram)
+telethon
 json
