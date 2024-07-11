@@ -56,7 +56,7 @@ def high_cvss(ops, vuln, client_id, asset_id, cvss):
 
 
 def low_cvss(vuln, client_id, asset_id, cvss):
-    room_id = 'Y2lzY29zcGFyazovL3VybjpURUFNOmV1LWNlbnRyYWwtMV9rL1JPT00vMzlmNjM2YjAtM2Y3Ny0xMWVmLWFhZTAtYzU3ZTM4ZmY5Nzg5'
+    room_id = private.low_cvss_roomid
     send_message(vuln, client_id, asset_id, cvss, room_id)
 
 def choose_ops(ops_list):
