@@ -139,15 +139,15 @@ def letturafeedrss():
         json.dump(titles2, fp=f, indent=4)
         print(",\n".join(titles2))
 
-def ripeti_esecuzione():
-        while True:
-            print("-----Esecuzione ogni 10 secondi-----")
-            ChannelMessages()
-            letturajson()
-            letturafeedrss()
-            print("-----Prossima esecuzione tra 10 secondi-----")
-            time.sleep(10)  # tempo in secondi
+def main():
+    while True:
+        print("-----Esecuzione ogni 10 secondi-----")
+        ChannelMessages()
+        letturajson()
+        letturafeedrss()
+        print("-----Prossima esecuzione tra 10 secondi-----")
+        time.sleep(10)  # tempo in secondi
 
 # Chiamata ai programmi
 if __name__ == "__main__":
-    ripeti_esecuzione()
+    main()
