@@ -3,3 +3,5 @@ requests
 webexteamssdk
 telethon
 json
+mysql.connector
+mysql-connector-python
