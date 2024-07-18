@@ -2,6 +2,7 @@ mysql.connector
 requests
 webexteamssdk
 telethon
-json
+private
+feedparser
 mysql.connector
 mysql-connector-python
