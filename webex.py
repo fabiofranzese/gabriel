@@ -1,14 +1,13 @@
 import requests
 import private
 
-# Token Bot Gabriel
-access_token = private.access_token
 ops_list = private.ops
+access_token = private.access_token
 base_url = 'https://webexapis.com'
 headers = {
-'Authorization': f'Bearer {access_token}',
-'Content-Type': 'application/json'
-}
+    'Authorization': f'Bearer {private.access_token}',
+    'Content-Type': 'application/json'
+    }
 
 def create_room(vuln, client_id):
     '''
@@ -37,42 +36,39 @@ def invite_ops(ops, room_id):
         res = requests.post(url, headers=headers, json=params)
     
 
-def send_message(vuln, client_id, asset_id, cvss, room_id):
+def send_message(vuln, client_id, asset_id, cvss, risk, room_id):
     '''
     Invia un messaggio con tutte le informazioni necessarie sulla vulnerabilità scoperta
     '''
     url = base_url + '/v1/messages'
-    message = f"Vulnerabilty: {vuln}\nClient: {client_id}\nAsset: {asset_id}\nCVSS: {cvss}"
+    message = f"Vulnerabilty: {vuln}\nClient: {client_id}\nAsset: {asset_id}\nCVSS: {cvss}\n Risk: {risk}"
     params = {
         'roomId': room_id,
         'markdown': message
     }
     res = requests.post(url, headers=headers, json=params)
     
-def high_cvss(ops, vuln, client_id, asset_id, cvss):
+def high_risk(ops, vuln, client_id, asset_id, cvss, risk):
     room_id = create_room(vuln, client_id)
     invite_ops(ops, room_id)
-    send_message(vuln, client_id, asset_id, cvss, room_id)
+    send_message(vuln, client_id, asset_id, cvss, risk, room_id)
 
 
-def low_cvss(vuln, client_id, asset_id, cvss):
+def low_risk(vuln, client_id, asset_id, cvss, risk):
     room_id = private.low_cvss_roomid
-    send_message(vuln, client_id, asset_id, cvss, room_id)
+    send_message(vuln, client_id, asset_id, cvss, risk, room_id)
 
-def choose_ops(ops_list):
+def choose_ops():
     # TO DO: Selezionare operatori in base alla loro disponibilità
-    return ops_list
+    return private.ops
 
 def main():
-    cvss = 6
     vuln = "Cisco Routers Firewall"
     client_id = "Maticmind"
     asset_id = "Router 2840"
-    if cvss > 7:
-        ops = choose_ops(ops_list)
-        high_cvss(ops, vuln, client_id, asset_id, cvss)
-    else:
-        low_cvss(vuln, client_id, asset_id, cvss)
+    ops = choose_ops()
+    high_risk(ops, vuln, client_id, asset_id, 8, 9.5)    
+    low_risk(vuln, client_id, asset_id, 5, 2.3)
 
 if __name__ == "__main__":
     main()

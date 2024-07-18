@@ -12,6 +12,9 @@ from telethon.tl.types import (
     PeerChannel
 )
 
+def pr():
+    print("A")
+
 def ChannelMessages():
     # some functions to parse json date
     class DateTimeEncoder(json.JSONEncoder):
@@ -136,10 +139,7 @@ def letturafeedrss():
         json.dump(titles2, fp=f, indent=4)
         print(",\n".join(titles2))
 
-
-# Chiamata ai programmi
-if __name__ == "__main__":
-    def ripeti_esecuzione():
+def ripeti_esecuzione():
         while True:
             print("-----Esecuzione ogni 10 secondi-----")
             ChannelMessages()
@@ -147,4 +147,7 @@ if __name__ == "__main__":
             letturafeedrss()
             print("-----Prossima esecuzione tra 10 secondi-----")
             time.sleep(10)  # tempo in secondi
-ripeti_esecuzione()
+
+# Chiamata ai programmi
+if __name__ == "__main__":
+    ripeti_esecuzione()

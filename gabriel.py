@@ -1,59 +1,36 @@
-import mysql.connector
-import requests
-from webexteamssdk import WebexTeamsAPI
+import db
+import webex
+import private
+import alerts
 import time
+import random
 
-def send_webex_notification(asset_id, cvss_score):
-    api = WebexTeamsAPI(access_token="") # TODO: token per il SOC
-    message = f"Asset {asset_id} vulnerability. CVSS: {cvss_score}"
-    api.messages.create(roomId="", text=message) # TODO: inserire room ID
-    # Creare canale generale per le vuln con CVSS basso
-
-
-def connect_to_cmdb():
-    return mysql.connector.connect(
-        host="localhost",
-        user="gabriel",
-        password="", # TODO: implementare la open di un file sul nostro sistema. Niente leak di credenziali qui.
-        database=""
-    )
-
-def check_asset_in_cmdb(asset_id):
-    conn = connect_to_cmdb()
-    cursor = conn.cursor()
-    query = "SELECT asset_id, cvss_score FROM assets WHERE asset_id = %s" # Ci prendiamo il parametro della funzione
-    cursor.execute(query, (asset_id,))
-    result = cursor.fetchone()
-    conn.close()
-    return result
-
-def get_threat_notifications():
-    # TODO: implementare API e capire dove acchiappare gli alert
-    talos_notifications = requests.get("URL_TALOS_API").json()
-    telegram_notifications = requests.get("URL_TELEGRAM_API").json()
-    discord_notifications = requests.get("URL_DISCORD_API").json()
-    
-    # Per ora ritorniamo un JSON
-    return talos_notifications + telegram_notifications + discord_notifications
-
-def process_notifications(notifications):
-    for notification in notifications:
-        asset_id = notification.get("asset_id")
-        asset = check_asset_in_cmdb(asset_id) # Qui facciamo la query
-        if asset:
-            asset_id, cvss_score = asset
-            if cvss_score > 7:
-                send_webex_notification(asset_id, cvss_score)
+def risk_calc(asset, cve):
+    '''
+    From asset and cve, based on the cve's CVSS score and on the asset's value 
+    in the client's system, calculates a risk score from 0 to 10
+    '''
+    return random.random(0,10)
 
 def main():
+    cmdb = db.CMDB()
     while True:
-        try:
-            notifications = get_threat_notifications()
-            process_notifications(notifications)
-        except Exception as e:
-            print(f"ERRORE: {e}")
-        # Sleep 60.
-        time.sleep(60)
+        cves = alerts.get_cves()
+        for cve in cves:
+            vuln_assets = cmdb.fetchAsset(cve["Vendor"], cve["Version"]) 
+            # FetchAsset returns the list of vulnerable assets, each of which is a dict with vuln, client_id, asset_id
+            if vuln_assets != None:
+                for asset in vuln_assets:
+                    risk = risk_calc(asset, cve) #TO DO
+                    if risk > 7:
+                        ops = webex.choose_ops()
+                        webex.high_risk(ops, asset.vuln, asset.client, asset.id, cve.cvss, risk)
+                    else:
+                        webex.low_risk(asset.vuln, asset.client, asset.id, cve.cvss, risk)
+        siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
+        if siem_events:
+            cmdb.processSIEMEvents(siem_events)
+        time.sleep(30)
 
 if __name__ == "__main__":
     main()
