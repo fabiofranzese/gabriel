@@ -1,8 +1,9 @@
-import configparser
 import json
 import asyncio
 from datetime import date, datetime
 import time
+import private
+import feedparser
 
 from telethon import TelegramClient
 from telethon.errors import SessionPasswordNeededError
@@ -24,18 +25,12 @@ def ChannelMessages():
             return json.JSONEncoder.default(self, o)
 
 
-    # Lettura valori di configurazione
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
     # Inserisce i valori di configurazione
-    api_id = config['Telegram']['api_id']
-    api_hash = config['Telegram']['api_hash']
+    api_id = private.t_api
+    api_hash = str(private.t_hash)
 
-    api_hash = str(api_hash)
-
-    phone = config['Telegram']['phone']
-    username = config['Telegram']['username']
+    phone = private.t_num
+    username = private.t_usr
 
     # Crea client e si connette
     client = TelegramClient(username, api_id, api_hash)
@@ -100,8 +95,6 @@ def ChannelMessages():
 
 
 def letturajson():
-    import json
-
     # Nome del file JSON da aprire
     nome_file = "channel_messages.json"
 
@@ -116,9 +109,6 @@ def letturajson():
             print("DATA:",m["date"])
 
 def letturafeedrss():
-    import feedparser
-    import json
-
     rss_url = "https://sec.cloudapps.cisco.com/security/center/eventResponses_20.xml"
     rss_url2 = "https://feeds.feedburner.com/TheHackersNews"
 
