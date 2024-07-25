@@ -1,3 +1,5 @@
 .venv
 private.py
 __pycache__/
+Alerts/*.json
+Alerts/*.session
