@@ -81,32 +81,17 @@ async def message_loop(phone):
         if total_count_limit != 0 and total_messages >= total_count_limit:
             break
         i+=1
-    with open('channel_messages2.json', 'w') as outfile:
+    with open('channel_messages.json', 'w') as outfile:
         json.dump(all_messages, outfile, cls=DateTimeEncoder)
 
 def ChannelMessages():
     with client:
         client.loop.run_until_complete(message_loop(phone))
 
-def letturajson():
-    # Nome del file JSON da aprire
-    nome_file = "channel_messages.json"
-
-    # Apre il file in modalità lettura
-    with open(nome_file, "r") as file:
-        # Carica il contenuto del file JSON in un dizionario
-        dati = json.load(file)
-
-    # Stampa il contenuto del dizionario
-        for m in dati:
-            print("ALERT:",m["message"])
-            print("DATA:",m["date"])
-
 def main():
     while True:
         print("-----Esecuzione ogni 10 secondi-----")
         ChannelMessages()
-        letturajson()
         print("-----Prossima esecuzione tra 10 secondi-----")
         time.sleep(10)  # tempo in secondi
 
