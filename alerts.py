@@ -6,10 +6,15 @@ import re
 import private
 from Alerts import csirt
 
-def get_csirt_risk(message):
+def get_csirt_cvss(message):
     pattern = re.compile(r'Rischio: (.+)')
+    if pattern == None:
+        return None
     match = pattern.search(message['message'])
-    emoji = match.group(1).strip()
+    try:
+        emoji = match.group(1).strip()
+    except:
+        return None
     if emoji == '🟡':
         return(5)
     elif emoji == '🟠':
@@ -22,27 +27,31 @@ def get_csirt_risk(message):
 def get_csirt_link(message):
     pattern = re.compile(r'🔗 (.+)')
     match = pattern.search(message['message'])
-    return match.group(1).strip()
+    try:
+        return match.group(1).strip()
+    except:
+        return None
 
 def csirt_cves():
     csirt.ChannelMessages()
     cves = []
-    with open('../Alerts/channel_messages.json', "r") as file:
+    with open('channel_messages.json', "r") as file:
         # Carica il contenuto del file JSON in un dizionario
         messages = json.load(file)
     for message in messages:
+        cvss = get_csirt_cvss(message)
+        if cvss == None:
+            continue
         cve = {}
         cve['Description'] = message['message'].split("\n")[0]
-        cve['Risk'] = get_csirt_risk(message)
+        cve['Cvss'] = get_csirt_cvss(message)
         cve['Resources'] = get_csirt_link(message)
         cves.append(cve)
-        print(cve)
-        print()
+    return cves
 
 def get_cves():
     cves = []
-    cves.append(csirt_cves())
-    print(cves)
+    cves = cves + (csirt_cves())
     return cves
 
 if __name__ == '__main__':
