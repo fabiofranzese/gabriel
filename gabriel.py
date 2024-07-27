@@ -31,12 +31,11 @@ def main():
                     webex.low_risk(cve, None)
             else:
                 for asset in vuln_assets:
-                    risk = risk_calc(asset, cve) #TO DO
-                    if risk > 6.5:
+                    if cve.get('Cvss') > 6.5: #Will have to implement it with risk_calc function:
                         webex.high_risk(cve, asset)
                     else:
                         webex.low_risk(cve, asset)        
-                        
+
         siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
         if siem_events:
             cmdb.processSIEMEvents(siem_events)
