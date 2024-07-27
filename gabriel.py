@@ -1,4 +1,4 @@
-#import db
+import db
 import webex
 import private
 import alerts
@@ -13,12 +13,12 @@ def risk_calc(asset, cve):
     return random.random(0,10)
 
 def main():
-    #cmdb = db.CMDB()
-    #while True:
+    cmdb = db.CMDB()
+    while True:
         cves = alerts.get_cves()
         for cve in cves:
             try:
-                vuln_assets = cve["Vendor"]
+                vuln_assets = cmdb.fetchAsset(cve["Vendor"], cve["Version"])
             except:
                 vuln_assets = 1 
             # FetchAsset returns the list of vulnerable assets, each of which is a dict with vuln, client_id, asset_id
@@ -37,10 +37,10 @@ def main():
                     else:
                         webex.low_risk(cve, asset)
         
-        """siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
+        siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
         if siem_events:
             cmdb.processSIEMEvents(siem_events)
-        time.sleep(30)"""
+        time.sleep(30)
 
 if __name__ == "__main__":
     main()
