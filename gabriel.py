@@ -35,8 +35,8 @@ def main():
                     if risk > 6.5:
                         webex.high_risk(cve, asset)
                     else:
-                        webex.low_risk(cve, asset)
-        
+                        webex.low_risk(cve, asset)        
+                        
         siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
         if siem_events:
             cmdb.processSIEMEvents(siem_events)
