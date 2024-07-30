@@ -4,8 +4,11 @@ Prende tutti gli alerts da tutte le fonti, dalla cartella Alerts e contiene le f
 import json
 import re
 import private
-from Alerts import csirt
+# from Alerts import csirt
 
+# Per demo, import di gabrielnews
+from Alerts import gabrielnews
+'''
 def get_csirt_cvss(message):
     pattern = re.compile(r'Rischio: (.+)')
     if pattern == None:
@@ -49,9 +52,72 @@ def csirt_cves():
         cves.append(cve)
     return cves
 
+'''
+
+def get_gabriel_vendor(message):
+    pattern = re.compile(r'Vendor: (.+)')
+    #match = pattern.search(message['message'])
+    match = pattern.search(message)
+    return match.group(1).strip()
+
+def get_gabriel_prodotto(message):
+    pattern = re.compile(r'Prodotto: (.+)')
+    match = pattern.search(message)
+    return match.group(1).strip()
+
+def get_gabriel_cvss(message):
+    pattern = re.compile(r'Rischio: (.+)')
+    match = pattern.search(message)
+    emoji = match.group(1).strip()
+    if emoji == '🟡':
+        return(5)
+    elif emoji == '🟠':
+        return (7)
+    elif emoji == '🔴':
+        return (9)
+    else:
+        return None
+
+def get_gabriel_vuln(message):
+    pattern = re.compile(r'Vulnerabilità: (.+)')
+    #match = pattern.search(message['message'])
+    match = pattern.search(message)
+    return match.group(1).strip()
+
+def get_gabriel_version(message):
+    pattern = re.compile(r'Versione: (.+)')
+    match = pattern.search(message)
+    return match.group(1).strip()
+
+def gabriel_cves():
+    # gabrielnews.ChannelMessages() # Assicurati di chiamare questa funzione solo se necessario
+    cves = []
+    with open('gabriel_messages.json', "r") as file:
+        # Carica il contenuto del file JSON in un dizionario
+        messages = json.load(file)
+    
+    for message in messages:
+        if 'message' in message:
+            print("TROVATOOOOOOO")
+            cve = {}
+            message_content = message['message']  # Faccio qui la conversione
+            cve['Vendor'] = get_gabriel_vendor(message_content)
+            cve['Prodotto'] = get_gabriel_prodotto(message_content)
+            cve['Version'] = get_gabriel_version(message_content)
+            cve['Cvss'] = get_gabriel_cvss(message_content)
+            cve['Description'] = get_gabriel_vuln(message_content)
+            cves.append(cve)
+        else:
+            # Gestisci il caso in cui la chiave 'message' non esista
+            # print(f"Chiave 'message' non trovata nel messaggio: {message}")
+            pass
+
+    return cves
+
 def get_cves():
     cves = []
-    cves = cves + (csirt_cves())
+    gabrielnews.ChannelMessages()
+    cves = cves + (gabriel_cves()) # Cambiato con gabriel_cves
     return cves
 
 if __name__ == '__main__':

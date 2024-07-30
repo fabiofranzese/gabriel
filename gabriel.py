@@ -13,33 +13,34 @@ def risk_calc(asset, cve):
     return random.random(0,10)
 
 def main():
+    #while True:
     cmdb = db.CMDB()
-    while True:
-        cves = alerts.get_cves()
-        for cve in cves:
-            try:
-                vuln_assets = cmdb.fetchAsset(cve["Vendor"], cve["Version"])
-            except:
-                vuln_assets = 1 
-            # FetchAsset returns the list of vulnerable assets, each of which is a dict with vuln, client_id, asset_id
-            if vuln_assets == None:
-                pass
-            elif vuln_assets == 1:
-                if cve.get('Cvss') > 6.5:
-                    webex.high_risk(cve, None)
-                else:
-                    webex.low_risk(cve, None)
-            else:
-                for asset in vuln_assets:
-                    if cve.get('Cvss') > 6.5: #Will have to implement it with risk_calc function:
-                        webex.high_risk(cve, asset)
-                    else:
-                        webex.low_risk(cve, asset)        
 
-        siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
-        if siem_events:
-            cmdb.processSIEMEvents(siem_events)
-        time.sleep(30)
+    cves = alerts.get_cves()
+    
+    for cve in cves:
+        
+        
+        vuln_assets = cmdb.fetchAsset(cve["Vendor"], cve["Version"])
+            
+        # FetchAsset returns the list of vulnerable assets, each of which is a dict with vuln, client_id, asset_id
+        if vuln_assets == 0:
+            pass
+        elif vuln_assets == 1:
+            if cve.get('Cvss') > 6.5:
+                webex.high_risk(cve, None)
+            else:
+                webex.low_risk(cve, None)
+        '''
+        else:
+            for asset in vuln_assets:
+                if cve.get('Cvss') > 6.5: #Will have to implement it with risk_calc function:
+                    webex.high_risk(cve, asset)
+                    
+                else:
+                    webex.low_risk(cve, asset) 
+                        
+        '''
 
 if __name__ == "__main__":
     main()

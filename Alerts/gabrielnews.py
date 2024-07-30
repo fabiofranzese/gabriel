@@ -90,11 +90,7 @@ def ChannelMessages():
         client.loop.run_until_complete(message_loop(phone))
 
 def main():
-    while True:
-        print("-----Esecuzione ogni 10 secondi-----")
-        ChannelMessages()
-        print("-----Prossima esecuzione tra 10 secondi-----")
-        time.sleep(10)  # tempo in secondi
+    ChannelMessages()
 
 # Chiamata ai programmi
 if __name__ == "__main__":

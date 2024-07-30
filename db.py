@@ -20,8 +20,13 @@ class CMDB:
         with self.connection.cursor() as cursor:
             cursor.execute(query, (vendor, versione))
             result = cursor.fetchall()
+            if result:
+                return 1
+            else:
+                return 0
             for row in result:
                 print(row)
+            
 
     # If SIEM detects a new device
     def addToDB(self, vendor: str, software: str, prodotto: str, versione: str, hostname: str, sdl: str):
@@ -78,10 +83,11 @@ class CMDB:
                 self.removeFromDB(hostname)
 
 # Esempio di utilizzo
-cmdb = CMDB()
-siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
-if siem_events:
-    cmdb.processSIEMEvents(siem_events)
+#cmdb = CMDB()
+#siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
+#if siem_events:
+#    cmdb.processSIEMEvents(siem_events)
 
-cmdb.removeFromDB("duel0")
-cmdb.fetchAsset("Francesco", "22.04")
+#cmdb.removeFromDB("duel0")
+#cmdb.fetchAsset("Francesco", "22.04")
+
