@@ -98,7 +98,6 @@ def gabriel_cves():
     
     for message in messages:
         if 'message' in message:
-            print("TROVATOOOOOOO")
             cve = {}
             message_content = message['message']  # Faccio qui la conversione
             cve['Vendor'] = get_gabriel_vendor(message_content)
