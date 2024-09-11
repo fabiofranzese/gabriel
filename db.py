@@ -8,24 +8,24 @@ class CMDB:
             self.connection = connect(
                 host=os.getenv("DB_HOST", "localhost"),
                 user=os.getenv("DB_USER", "root"),
-                password=os.getenv("DB_PASSWORD", "rootino123"), # Nasconde la password
+                #password=os.getenv("DB_PASSWORD", "rootino123"), # Nasconde la password
                 database=os.getenv("DB_NAME", "gabriel")
             )
         except Error as e:
             print(e)
 
     # CTI notifies threat, check if assets are affected
-    def fetchAsset(self, vendor: str, versione: str):
-        query = "SELECT Prodotto, Hostname, SDL FROM cmdb WHERE vendor=%s and versione=%s;"
+    def fetchAsset(self, vendor: str, versione: str, prodotto: str):
+        query = "SELECT Hostname, SDL, Value FROM cmdb WHERE vendor=%s and versione=%s and Prodotto=%s"
         with self.connection.cursor() as cursor:
-            cursor.execute(query, (vendor, versione))
-            result = cursor.fetchall()
-            if result:
-                return 1
-            else:
-                return 0
-            for row in result:
-                print(row)
+            cursor.execute(query, (vendor, versione, prodotto))
+            results = cursor.fetchall()
+            self.connection.commit()
+        vuln_assets = []
+        for result in results:
+            asset = {'Hostname' : result[0], 'SDL' : result[1], 'Value':result[2]} 
+            vuln_assets.append(asset)
+        return vuln_assets
             
 
     # If SIEM detects a new device
@@ -47,7 +47,23 @@ class CMDB:
         query = "DELETE FROM cmdb WHERE Hostname = %s;"
         with self.connection.cursor() as cursor:
             cursor.execute(query, (hostname,))
+            self.connection.commit()    
+
+    def choose_ops(self):
+        query = "SELECT email, id FROM operatori ORDER BY Numero_ticket ASC LIMIT 1;"
+        with self.connection.cursor() as cursor:
+            cursor.execute(query)
+            result = cursor.fetchall()
             self.connection.commit()
+        # Eseguire query sulla tabella degli operatori e ritornare una lista con elemento un dizionario con webex id ed email dell'operatore
+        return (result[0][0], result[0][1])
+    
+    def add_ticket(self, id, hostname, sdl):
+        sql = "insert into ticket (operatore_id, Hostname, SDL) values (%s, %s, %s);"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql, (id, hostname, sdl))            
+            self.connection.commit()
+        return
 
     # Fetch events from SIEM
     def fetchEventsFromSIEM(self, siem_url: str, api_key: str):
