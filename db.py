@@ -58,12 +58,18 @@ class CMDB:
         # Eseguire query sulla tabella degli operatori e ritornare una lista con elemento un dizionario con webex id ed email dell'operatore
         return (result[0][0], result[0][1])
     
-    def add_ticket(self, id, hostname, sdl):
-        sql = "insert into ticket (operatore_id, Hostname, SDL) values (%s, %s, %s);"
+    def add_ticket(self, id, hostname, sdl, room_id):
+        sql = "insert into ticket (operatore_id, Hostname, SDL, Room_id) values (%s, %s, %s, %s);"
         with self.connection.cursor() as cursor:
-            cursor.execute(sql, (id, hostname, sdl))            
+            cursor.execute(sql, (id, hostname, sdl, room_id))            
             self.connection.commit()
         return
+    
+    def delete_ticket(self, room_id):
+        sql = "delete from ticket where room_id=%s;"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql, (room_id,))
+            self.connection.commit()
 
     # Fetch events from SIEM
     def fetchEventsFromSIEM(self, siem_url: str, api_key: str):
@@ -97,13 +103,3 @@ class CMDB:
                 self.updateAsset(hostname, versione)
             elif action == 'remove':
                 self.removeFromDB(hostname)
-
-# Esempio di utilizzo
-#cmdb = CMDB()
-#siem_events = cmdb.fetchEventsFromSIEM("http://siem.example.com/api/events", "API_KEY_HERE")
-#if siem_events:
-#    cmdb.processSIEMEvents(siem_events)
-
-#cmdb.removeFromDB("duel0")
-#cmdb.fetchAsset("Francesco", "22.04")
-

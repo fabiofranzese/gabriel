@@ -4,6 +4,7 @@ import private
 import alerts
 import time
 import random
+import webhook
 
 def risk_calc(value, cvss):
     '''
@@ -36,3 +37,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    webhook.app.run(debug=True)

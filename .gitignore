@@ -3,5 +3,7 @@ private.py
 __pycache__/
 Alerts/*.json
 Alerts/*.session
+gabriel/
+include/
 *.session
 *.json
