@@ -23,7 +23,7 @@ class CMDB:
             self.connection.commit()
         vuln_assets = []
         for result in results:
-            asset = {'Hostname' : result[0], 'SDL' : result[1], 'Value':result[2]} 
+            asset = {'Hostname' : result[0], 'SDL' : result[1], 'Value':result[2], 'Contract': self.get_plan(result[1])}
             vuln_assets.append(asset)
         return vuln_assets
             
@@ -70,6 +70,13 @@ class CMDB:
         with self.connection.cursor() as cursor:
             cursor.execute(sql, (room_id,))
             self.connection.commit()
+
+    def get_plan(self, sdl):
+        query = "select Tipo from contratti where ID=%s;"
+        with self.connection.cursor() as cursor:
+            cursor.execute(query, (sdl,))
+            result = cursor.fetchall()
+        return result[0][0]
 
     # Fetch events from SIEM
     def fetchEventsFromSIEM(self, siem_url: str, api_key: str):
