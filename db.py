@@ -8,7 +8,7 @@ class CMDB:
             self.connection = connect(
                 host=os.getenv("DB_HOST", "localhost"),
                 user=os.getenv("DB_USER", "root"),
-                #password=os.getenv("DB_PASSWORD", "rootino123"), # Nasconde la password
+                password=os.getenv("DB_PASSWORD", ""), # REDACTED
                 database=os.getenv("DB_NAME", "gabriel")
             )
         except Error as e:
